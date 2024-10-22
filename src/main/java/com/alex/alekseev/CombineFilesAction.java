@@ -38,21 +38,10 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
 
         // Combine contents, skipping excluded file types
         StringBuilder combinedContent = new StringBuilder();
-        for (VirtualFile file : files) {
-            if (shouldExcludeFile(file, excludedExtensions)) {
-                // Skip excluded files
-                continue;
-            }
 
-            String relativePath = getRelativePath(commonBasePath, file.getPath());
-            combinedContent.append("=== ").append(relativePath).append(" ===\n");
-            try {
-                combinedContent.append(new String(file.contentsToByteArray())).append("\n");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                Messages.showErrorDialog("Failed to read file: " + file.getName(), "Error");
-                return;
-            }
+        // Process each selected file/directory
+        for (VirtualFile file : files) {
+            processFile(file, commonBasePath, excludedExtensions, combinedContent);
         }
 
         // Copy combined content to clipboard
@@ -64,6 +53,31 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
         } catch (Exception ex) {
             ex.printStackTrace();
             Messages.showErrorDialog("Failed to copy to clipboard: " + ex.getMessage(), "Error");
+        }
+    }
+
+    // Recursive method to process files and directories
+    private void processFile(VirtualFile file, String commonBasePath, List<String> excludedExtensions, StringBuilder combinedContent) {
+        if (file.isDirectory()) {
+            // If the file is a directory, process its children
+            for (VirtualFile child : file.getChildren()) {
+                processFile(child, commonBasePath, excludedExtensions, combinedContent);
+            }
+        } else {
+            // If the file is not a directory, process it
+            if (shouldExcludeFile(file, excludedExtensions)) {
+                // Skip excluded files
+                return;
+            }
+
+            String relativePath = getRelativePath(commonBasePath, file.getPath());
+            combinedContent.append("=== ").append(relativePath).append(" ===\n");
+            try {
+                combinedContent.append(new String(file.contentsToByteArray())).append("\n");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                Messages.showErrorDialog("Failed to read file: " + file.getName(), "Error");
+            }
         }
     }
 
