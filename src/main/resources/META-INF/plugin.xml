@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.alex.alekseev.CombineAndCopyFiles</id>
     <name>Combine and Copy Files to Clipboard</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <vendor email="alex@daniks.com" url="https://github.com/aaalekseev/">Alex Alekseev</vendor>
     <description>
         Combine and copy the content of multiple files to the clipboard, split by path and relative file names.
@@ -10,11 +10,9 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 1.0.0</h3>
+        <h3>Version 1.0.1</h3>
         <ul>
-            <li>Added relative file paths to the copied file headings for better context.</li>
-            <li>Added the "Combine and Copy Files to Clipboard" option to the project view context menu.</li>
-            <li>Added settings to configure excluded file extensions.</li>
+            <li>Added directories support.</li>
         </ul>
         ]]>
     </change-notes>
