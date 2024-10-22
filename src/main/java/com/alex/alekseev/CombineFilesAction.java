@@ -30,6 +30,7 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
         CombineFilesSettingsState settings = CombineFilesSettingsState.getInstance();
         List<String> excludedExtensions = settings.getExcludedExtensionsAsList();
         List<String> excludedDirectories = settings.getExcludedDirectoriesAsList();
+        List<String> excludedFileNames = settings.getExcludedFileNamesAsList(); // Get excluded file names
 
         // Find the common base path
         String commonBasePath = findCommonBasePath(files);
@@ -43,7 +44,7 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
 
         // Process each selected file/directory
         for (VirtualFile file : files) {
-            processFile(file, commonBasePath, excludedExtensions, excludedDirectories, combinedContent);
+            processFile(file, commonBasePath, excludedExtensions, excludedDirectories, excludedFileNames, combinedContent);
         }
 
         // Copy combined content to clipboard
@@ -60,7 +61,7 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
 
     // Recursive method to process files and directories
     private void processFile(VirtualFile file, String commonBasePath, List<String> excludedExtensions,
-                             List<String> excludedDirectories, StringBuilder combinedContent) {
+                             List<String> excludedDirectories, List<String> excludedFileNames, StringBuilder combinedContent) {
         if (file.isDirectory()) {
             if (shouldExcludeDirectory(file, excludedDirectories)) {
                 // Skip excluded directories
@@ -68,10 +69,10 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
             }
             // Process children
             for (VirtualFile child : file.getChildren()) {
-                processFile(child, commonBasePath, excludedExtensions, excludedDirectories, combinedContent);
+                processFile(child, commonBasePath, excludedExtensions, excludedDirectories, excludedFileNames, combinedContent);
             }
         } else {
-            if (shouldExcludeFile(file, excludedExtensions)) {
+            if (shouldExcludeFile(file, excludedExtensions, excludedFileNames)) {
                 // Skip excluded files
                 return;
             }
@@ -92,10 +93,13 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
         return excludedDirectories.stream().anyMatch(excludedDir -> excludedDir.equalsIgnoreCase(dirName));
     }
 
-    // Method to determine if a file should be excluded based on its extension and user settings
-    private boolean shouldExcludeFile(VirtualFile file, List<String> excludedExtensions) {
+    // Updated method to check both extensions and file names
+    private boolean shouldExcludeFile(VirtualFile file, List<String> excludedExtensions, List<String> excludedFileNames) {
         String extension = file.getExtension();
-        return extension != null && excludedExtensions.contains(extension.toLowerCase());
+        String fileName = file.getName();
+        boolean excludeByExtension = extension != null && excludedExtensions.contains(extension.toLowerCase());
+        boolean excludeByName = excludedFileNames.contains(fileName);
+        return excludeByExtension || excludeByName;
     }
 
     @Override

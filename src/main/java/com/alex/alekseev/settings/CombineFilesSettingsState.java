@@ -18,6 +18,7 @@ public final class CombineFilesSettingsState implements PersistentStateComponent
 
     private String excludedExtensions = "pyc,class,log,tmp,so,dylib"; // Default exclusions
     private String excludedDirectories = ""; // Default to none
+    private String excludedFileNames = ""; // New field for excluded file names
 
     public static CombineFilesSettingsState getInstance() {
         return ApplicationManager.getApplication().getService(CombineFilesSettingsState.class);
@@ -33,6 +34,7 @@ public final class CombineFilesSettingsState implements PersistentStateComponent
     public void loadState(@NotNull CombineFilesSettingsState state) {
         this.excludedExtensions = state.excludedExtensions;
         this.excludedDirectories = state.excludedDirectories;
+        this.excludedFileNames = state.excludedFileNames; // Load excluded file names
     }
 
     public String getExcludedExtensions() {
@@ -60,6 +62,20 @@ public final class CombineFilesSettingsState implements PersistentStateComponent
 
     public List<String> getExcludedDirectoriesAsList() {
         return Arrays.stream(excludedDirectories.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+    }
+
+    public String getExcludedFileNames() {
+        return excludedFileNames;
+    }
+
+    public void setExcludedFileNames(String excludedFileNames) {
+        this.excludedFileNames = excludedFileNames;
+    }
+
+    public List<String> getExcludedFileNamesAsList() {
+        return Arrays.stream(excludedFileNames.split(","))
                 .map(String::trim)
                 .collect(Collectors.toList());
     }

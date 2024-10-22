@@ -10,6 +10,7 @@ public class CombineFilesSettingsConfigurable implements Configurable {
     private JPanel mainPanel;
     private JTextField excludedExtensionsField;
     private JTextField excludedDirectoriesField;
+    private JTextField excludedFileNamesField; // New field for excluded file names
 
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
@@ -29,11 +30,17 @@ public class CombineFilesSettingsConfigurable implements Configurable {
         JLabel directoriesLabel = new JLabel("Excluded Directories (comma-separated):");
         excludedDirectoriesField = new JTextField(30);
 
+        JLabel fileNamesLabel = new JLabel("Excluded File Names (comma-separated):"); // New label
+        excludedFileNamesField = new JTextField(30); // New text field
+
         mainPanel.add(extensionsLabel);
         mainPanel.add(excludedExtensionsField);
-        mainPanel.add(Box.createVerticalStrut(10)); // Add some space between fields
+        mainPanel.add(Box.createVerticalStrut(10)); // Space between fields
         mainPanel.add(directoriesLabel);
         mainPanel.add(excludedDirectoriesField);
+        mainPanel.add(Box.createVerticalStrut(10)); // Space between fields
+        mainPanel.add(fileNamesLabel);
+        mainPanel.add(excludedFileNamesField);
 
         return mainPanel;
     }
@@ -52,6 +59,9 @@ public class CombineFilesSettingsConfigurable implements Configurable {
         if (!excludedDirectoriesField.getText().equals(settingsState.getExcludedDirectories())) {
             modified = true;
         }
+        if (!excludedFileNamesField.getText().equals(settingsState.getExcludedFileNames())) { // Check for changes
+            modified = true;
+        }
         return modified;
     }
 
@@ -61,6 +71,7 @@ public class CombineFilesSettingsConfigurable implements Configurable {
         if (settingsState != null) {
             settingsState.setExcludedExtensions(excludedExtensionsField.getText());
             settingsState.setExcludedDirectories(excludedDirectoriesField.getText());
+            settingsState.setExcludedFileNames(excludedFileNamesField.getText()); // Save excluded file names
         }
     }
 
@@ -70,6 +81,7 @@ public class CombineFilesSettingsConfigurable implements Configurable {
         if (settingsState != null) {
             excludedExtensionsField.setText(settingsState.getExcludedExtensions());
             excludedDirectoriesField.setText(settingsState.getExcludedDirectories());
+            excludedFileNamesField.setText(settingsState.getExcludedFileNames()); // Reset excluded file names
         }
     }
 
@@ -78,5 +90,6 @@ public class CombineFilesSettingsConfigurable implements Configurable {
         mainPanel = null;
         excludedExtensionsField = null;
         excludedDirectoriesField = null;
+        excludedFileNamesField = null; // Dispose of the new field
     }
 }
