@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.alex.alekseev.CombineAndCopyFiles</id>
     <name>Copy Files to Clipboard for LLM</name>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <vendor email="alex@daniks.com" url="https://github.com/aaalekseev/">Alex Alekseev</vendor>
     <description>
         Combine and copy the content of multiple files or entire directories to the clipboard, organized by path and relative file names.
@@ -11,7 +11,7 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 1.0.6</h3>
+        <h3>Version 1.0.7</h3>
         <ul>
             <li>Added directories support.</li>
             <li>Added exclude directories setting.</li>
@@ -44,4 +44,7 @@
                                  displayName="Copy Files for LLM Settings"
                                  instance="com.alex.alekseev.settings.CombineFilesSettingsConfigurable"/>
     </extensions>
+
+    <!-- Supports all IDEs starting from version 2019.3 (since-build="193") -->
+    <idea-version since-build="193"/>
 </idea-plugin>

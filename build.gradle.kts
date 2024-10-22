@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.alex.alekseev"
-version = "1.0.6"
+version = "1.0.7"
 
 repositories {
     mavenCentral()
@@ -32,8 +32,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("232")
-        untilBuild.set("242.*")
+        sinceBuild.set("193")  // Supports IntelliJ 2019.3 and later
     }
 
     signPlugin {
