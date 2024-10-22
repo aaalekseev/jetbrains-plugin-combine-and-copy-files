@@ -1,29 +1,45 @@
 <idea-plugin>
-    <id>com.george.gale.CombineAndCopyFiles</id>
+    <id>com.alex.alekseev.CombineAndCopyFiles</id>
     <name>Combine and Copy Files to Clipboard</name>
-    <version>1.1.0</version>
-    <vendor email="gmale@icloud.com" url="https://github.com/gmgale/">George Gale</vendor>
+    <version>1.0.0</version>
+    <vendor email="alex@daniks.com" url="https://github.com/aaalekseev/">Alex Alekseev</vendor>
     <description>
-         Combine and Copy the content of multiple files to the clipboard, split by path and relative file names.
+        Combine and copy the content of multiple files to the clipboard, split by path and relative file names.
         Ideal for providing better context to LLMs such as OpenAI's ChatGPT and Anthropic's Claude.
     </description>
 
     <change-notes>
         <![CDATA[
-        <h3>Version 1.1.0</h3>
+        <h3>Version 1.0.0</h3>
         <ul>
-            <li>Added relative file paths to the copied file headings for better context</li>
-            <li>Added the "Combine and Copy Files to Clipboard" option to the project view context menu</li>
+            <li>Added relative file paths to the copied file headings for better context.</li>
+            <li>Added the "Combine and Copy Files to Clipboard" option to the project view context menu.</li>
+            <li>Added settings to configure excluded file extensions.</li>
         </ul>
         ]]>
     </change-notes>
 
     <depends>com.intellij.modules.platform</depends>
 
+    <!-- Actions should be registered directly under the root -->
     <actions>
-        <action id="CombineFilesAction" class="com.george.gale.CombineFilesAction" text="Combine and Copy Files to Clipboard">
+        <action id="CombineFilesAction"
+                class="com.alex.alekseev.CombineFilesAction"
+                text="Combine and Copy Files to Clipboard"
+                description="Combine and copy the content of selected files to the clipboard">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="ProjectViewEditSource"/>
         </action>
     </actions>
+
+    <!-- Extensions are registered inside the <extensions> tag -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Register the application service -->
+        <applicationService serviceImplementation="com.alex.alekseev.settings.CombineFilesSettingsState"/>
+
+        <!-- Register the settings configurable -->
+        <applicationConfigurable id="com.alex.alekseev.settings.CombineFilesSettingsConfigurable"
+                                 displayName="Combine Files Settings"
+                                 instance="com.alex.alekseev.settings.CombineFilesSettingsConfigurable"/>
+    </extensions>
 </idea-plugin>

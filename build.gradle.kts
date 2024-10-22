@@ -1,18 +1,15 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.24"
     id("org.jetbrains.intellij") version "1.17.3"
 }
 
-group = "com.george.gale"
-version = "1.1.0"
+group = "com.alex.alekseev"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
 }
 
-// Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
     version.set("2023.2.6")
     type.set("IC") // Target IDE Platform
@@ -21,7 +18,7 @@ intellij {
 }
 
 sourceSets {
-    getByName("main") {
+    main {
         java.srcDir("src/main/java")
         resources.srcDir("src/main/resources")
     }
@@ -32,9 +29,6 @@ tasks {
     withType<JavaCompile> {
         sourceCompatibility = "17"
         targetCompatibility = "17"
-    }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
     }
 
     patchPluginXml {
