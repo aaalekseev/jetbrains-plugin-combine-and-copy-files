@@ -9,6 +9,7 @@ import javax.swing.*;
 public class CombineFilesSettingsConfigurable implements Configurable {
     private JPanel mainPanel;
     private JTextField excludedExtensionsField;
+    private JTextField excludedDirectoriesField;
 
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
@@ -22,11 +23,17 @@ public class CombineFilesSettingsConfigurable implements Configurable {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        JLabel label = new JLabel("Excluded File Extensions (comma-separated):");
+        JLabel extensionsLabel = new JLabel("Excluded File Extensions (comma-separated):");
         excludedExtensionsField = new JTextField(30);
 
-        mainPanel.add(label);
+        JLabel directoriesLabel = new JLabel("Excluded Directories (comma-separated):");
+        excludedDirectoriesField = new JTextField(30);
+
+        mainPanel.add(extensionsLabel);
         mainPanel.add(excludedExtensionsField);
+        mainPanel.add(Box.createVerticalStrut(10)); // Add some space between fields
+        mainPanel.add(directoriesLabel);
+        mainPanel.add(excludedDirectoriesField);
 
         return mainPanel;
     }
@@ -38,16 +45,22 @@ public class CombineFilesSettingsConfigurable implements Configurable {
             return false;
         }
 
-        String currentExclusions = settingsState.getExcludedExtensions();
-        return !excludedExtensionsField.getText().equals(currentExclusions);
+        boolean modified = false;
+        if (!excludedExtensionsField.getText().equals(settingsState.getExcludedExtensions())) {
+            modified = true;
+        }
+        if (!excludedDirectoriesField.getText().equals(settingsState.getExcludedDirectories())) {
+            modified = true;
+        }
+        return modified;
     }
 
     @Override
     public void apply() {
         CombineFilesSettingsState settingsState = CombineFilesSettingsState.getInstance();
         if (settingsState != null) {
-            String userExclusions = excludedExtensionsField.getText();
-            settingsState.setExcludedExtensions(userExclusions);
+            settingsState.setExcludedExtensions(excludedExtensionsField.getText());
+            settingsState.setExcludedDirectories(excludedDirectoriesField.getText());
         }
     }
 
@@ -55,8 +68,8 @@ public class CombineFilesSettingsConfigurable implements Configurable {
     public void reset() {
         CombineFilesSettingsState settingsState = CombineFilesSettingsState.getInstance();
         if (settingsState != null) {
-            String savedExclusions = settingsState.getExcludedExtensions();
-            excludedExtensionsField.setText(savedExclusions);
+            excludedExtensionsField.setText(settingsState.getExcludedExtensions());
+            excludedDirectoriesField.setText(settingsState.getExcludedDirectories());
         }
     }
 
@@ -64,5 +77,6 @@ public class CombineFilesSettingsConfigurable implements Configurable {
     public void disposeUIResources() {
         mainPanel = null;
         excludedExtensionsField = null;
+        excludedDirectoriesField = null;
     }
 }

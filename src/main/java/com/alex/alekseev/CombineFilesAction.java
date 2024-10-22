@@ -27,7 +27,9 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
         }
 
         // Get user-defined exclusions from settings
-        List<String> excludedExtensions = CombineFilesSettingsState.getInstance().getExcludedExtensionsAsList();
+        CombineFilesSettingsState settings = CombineFilesSettingsState.getInstance();
+        List<String> excludedExtensions = settings.getExcludedExtensionsAsList();
+        List<String> excludedDirectories = settings.getExcludedDirectoriesAsList();
 
         // Find the common base path
         String commonBasePath = findCommonBasePath(files);
@@ -36,12 +38,12 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
             return;
         }
 
-        // Combine contents, skipping excluded file types
+        // Use a StringBuilder to collect combined content
         StringBuilder combinedContent = new StringBuilder();
 
         // Process each selected file/directory
         for (VirtualFile file : files) {
-            processFile(file, commonBasePath, excludedExtensions, combinedContent);
+            processFile(file, commonBasePath, excludedExtensions, excludedDirectories, combinedContent);
         }
 
         // Copy combined content to clipboard
@@ -49,6 +51,7 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
             StringSelection stringSelection = new StringSelection(combinedContent.toString());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, this);
+            // No success message as per your previous request
         } catch (Exception ex) {
             ex.printStackTrace();
             Messages.showErrorDialog("Failed to copy to clipboard: " + ex.getMessage(), "Error");
@@ -56,14 +59,18 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
     }
 
     // Recursive method to process files and directories
-    private void processFile(VirtualFile file, String commonBasePath, List<String> excludedExtensions, StringBuilder combinedContent) {
+    private void processFile(VirtualFile file, String commonBasePath, List<String> excludedExtensions,
+                             List<String> excludedDirectories, StringBuilder combinedContent) {
         if (file.isDirectory()) {
-            // If the file is a directory, process its children
+            if (shouldExcludeDirectory(file, excludedDirectories)) {
+                // Skip excluded directories
+                return;
+            }
+            // Process children
             for (VirtualFile child : file.getChildren()) {
-                processFile(child, commonBasePath, excludedExtensions, combinedContent);
+                processFile(child, commonBasePath, excludedExtensions, excludedDirectories, combinedContent);
             }
         } else {
-            // If the file is not a directory, process it
             if (shouldExcludeFile(file, excludedExtensions)) {
                 // Skip excluded files
                 return;
@@ -72,7 +79,7 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
             String relativePath = getRelativePath(commonBasePath, file.getPath());
             combinedContent.append("=== ").append(relativePath).append(" ===\n");
             try {
-                combinedContent.append(new String(file.contentsToByteArray())).append("\n\n");
+                combinedContent.append(new String(file.contentsToByteArray())).append("\n");
             } catch (IOException ex) {
                 ex.printStackTrace();
                 Messages.showErrorDialog("Failed to read file: " + file.getName(), "Error");
@@ -80,15 +87,20 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
         }
     }
 
-    @Override
-    public void lostOwnership(Clipboard clipboard, Transferable contents) {
-        // No action needed when clipboard ownership is lost
+    private boolean shouldExcludeDirectory(VirtualFile directory, List<String> excludedDirectories) {
+        String dirName = directory.getName();
+        return excludedDirectories.stream().anyMatch(excludedDir -> excludedDir.equalsIgnoreCase(dirName));
     }
 
     // Method to determine if a file should be excluded based on its extension and user settings
     private boolean shouldExcludeFile(VirtualFile file, List<String> excludedExtensions) {
         String extension = file.getExtension();
         return extension != null && excludedExtensions.contains(extension.toLowerCase());
+    }
+
+    @Override
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {
+        // No action needed when clipboard ownership is lost
     }
 
     private String findCommonBasePath(VirtualFile[] files) {
@@ -104,16 +116,19 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
     }
 
     private Path commonPath(Path path1, Path path2) {
+        if (path1 == null || path2 == null) {
+            return null;
+        }
         int count = Math.min(path1.getNameCount(), path2.getNameCount());
         Path result = path1.getRoot();
         for (int i = 0; i < count; i++) {
             if (path1.getName(i).equals(path2.getName(i))) {
-                result = result.resolve(path1.getName(i));
+                result = result == null ? path1.getName(i) : result.resolve(path1.getName(i));
             } else {
                 break;
             }
         }
-        return result.getNameCount() > 0 ? result : null;
+        return result;
     }
 
     private String getRelativePath(String basePath, String fullPath) {
