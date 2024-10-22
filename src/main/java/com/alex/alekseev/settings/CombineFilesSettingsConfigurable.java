@@ -15,7 +15,7 @@ public class CombineFilesSettingsConfigurable implements Configurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "Combine Files Settings";
+        return "Copy Files for LLM Settings";
     }
 
     @Nullable
