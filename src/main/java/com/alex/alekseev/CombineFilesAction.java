@@ -49,7 +49,6 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
             StringSelection stringSelection = new StringSelection(combinedContent.toString());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, this);
-            Messages.showInfoMessage("Combined content copied to clipboard.", "Success");
         } catch (Exception ex) {
             ex.printStackTrace();
             Messages.showErrorDialog("Failed to copy to clipboard: " + ex.getMessage(), "Error");
@@ -73,7 +72,7 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
             String relativePath = getRelativePath(commonBasePath, file.getPath());
             combinedContent.append("=== ").append(relativePath).append(" ===\n");
             try {
-                combinedContent.append(new String(file.contentsToByteArray())).append("\n");
+                combinedContent.append(new String(file.contentsToByteArray())).append("\n\n");
             } catch (IOException ex) {
                 ex.printStackTrace();
                 Messages.showErrorDialog("Failed to read file: " + file.getName(), "Error");
