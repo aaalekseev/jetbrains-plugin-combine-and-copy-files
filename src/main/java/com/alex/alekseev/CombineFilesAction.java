@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -77,10 +78,19 @@ public class CombineFilesAction extends AnAction implements ClipboardOwner {
                 return;
             }
 
-            String relativePath = getRelativePath(commonBasePath, file.getPath());
-            combinedContent.append("=== ").append(relativePath).append(" ===\n");
+            // Read the file content
             try {
-                combinedContent.append(new String(file.contentsToByteArray())).append("\n");
+                String content = new String(file.contentsToByteArray(), StandardCharsets.UTF_8);
+
+                // Check if the file is empty or contains only whitespace
+                if (content.trim().isEmpty()) {
+                    // Skip files that are empty or only contain spaces
+                    return;
+                }
+
+                String relativePath = getRelativePath(commonBasePath, file.getPath());
+                combinedContent.append("=== ").append(relativePath).append(" ===\n");
+                combinedContent.append(content).append("\n\n");
             } catch (IOException ex) {
                 ex.printStackTrace();
                 Messages.showErrorDialog("Failed to read file: " + file.getName(), "Error");

@@ -19,5 +19,5 @@
     </g>
 
     <!-- Text with a shadow -->
-    <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="10" font-weight="bold" fill="#FFFFFF" style="text-shadow: 1px 1px 2px #000000;">CCF</text>
+    <text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="10" font-weight="bold" fill="#FFFFFF" style="text-shadow: 1px 1px 2px #000000;">LLM</text>
 </svg>
